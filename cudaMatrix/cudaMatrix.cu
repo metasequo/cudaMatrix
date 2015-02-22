@@ -1,9 +1,9 @@
-#include	<stdio.h>
+ï»¿#include	<stdio.h>
 #include	<malloc.h>
 #include	<stdlib.h>
 #include	<cutil_inline.h>
 
-// s—ñ‚ÌƒTƒCƒYAƒuƒƒbƒNƒTƒCƒY
+// è¡Œåˆ—ã®ã‚µã‚¤ã‚ºã€ãƒ–ãƒ­ãƒƒã‚¯ã‚µã‚¤ã‚º
 #define	MATRIX_SIZE	4096
 #define	BLOCK_SIZE	128
 
@@ -13,7 +13,7 @@ matrixMul(int* inMatrixA, int* inMatrixB, int* inMatrixC);
 int
 main(int argc, char** argv)
 {
-	// •Ï”éŒ¾
+	// å¤‰æ•°å®£è¨€
 	unsigned int matrixSize = sizeof(unsigned int) * MATRIX_SIZE * MATRIX_SIZE;
 	int* hMatrixA;
 	int* hMatrixB;
@@ -21,7 +21,7 @@ main(int argc, char** argv)
 	hMatrixA = (int*) malloc(matrixSize);
 	hMatrixB = (int*) malloc(matrixSize);
 
-	// ‰Šú’lİ’è
+	// åˆæœŸå€¤è¨­å®š
 	unsigned int	col_idx, row_idx;
 	for (col_idx = 0; col_idx < MATRIX_SIZE; col_idx++) {
 		for (row_idx = 0; row_idx < MATRIX_SIZE; row_idx++) {
@@ -30,23 +30,23 @@ main(int argc, char** argv)
 		}
 	}
 
-	// ƒfƒoƒCƒX‘¤‚Ì•Ï”
+	// ãƒ‡ãƒã‚¤ã‚¹å´ã®å¤‰æ•°
 	int* dMatrixA;
 	int* dMatrixB;
 	int* dMatrixC;
 
-	// ƒfƒoƒCƒXƒƒ‚ƒŠ‚ÌŠm•Û
+	// ãƒ‡ãƒã‚¤ã‚¹ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿
 	cutilSafeCall(cudaMalloc((void**) &dMatrixA, matrixSize));
 	cutilSafeCall(cudaMemcpy(dMatrixA, hMatrixA, matrixSize, cudaMemcpyHostToDevice));
 	cutilSafeCall(cudaMalloc((void**) &dMatrixB, matrixSize));
 	cutilSafeCall(cudaMemcpy(dMatrixB, hMatrixB, matrixSize, cudaMemcpyHostToDevice));
 	cutilSafeCall(cudaMalloc((void**) &dMatrixC, matrixSize));
 
-	// ƒuƒƒbƒNƒTƒCƒY‚ÆƒOƒŠƒbƒhƒTƒCƒY‚Ìİ’è
+	// ãƒ–ãƒ­ãƒƒã‚¯ã‚µã‚¤ã‚ºã¨ã‚°ãƒªãƒƒãƒ‰ã‚µã‚¤ã‚ºã®è¨­å®š
 	dim3 block(BLOCK_SIZE, BLOCK_SIZE);
 	dim3 grid(MATRIX_SIZE / BLOCK_SIZE, MATRIX_SIZE / BLOCK_SIZE);
 
-	// ƒ^ƒCƒ}[•Ï”‚ÌéŒ¾A‘ª’èŠJn
+	// ã‚¿ã‚¤ãƒãƒ¼å¤‰æ•°ã®å®£è¨€ã€æ¸¬å®šé–‹å§‹
 	printf("Matrix calculation start in the GPU!\n");
 	printf("Matrix size\t:\t%d * %d\n", MATRIX_SIZE, MATRIX_SIZE);
 	printf("BlockSize\t:\t%d\nGridSize\t:\t%d\n", BLOCK_SIZE, grid);
@@ -59,11 +59,11 @@ main(int argc, char** argv)
 	for (int i = 0; i < 10; i++){
 		cudaEventRecord(start, 0);
 
-		// ƒJ[ƒlƒ‹‚Ì‹N“®
+		// ã‚«ãƒ¼ãƒãƒ«ã®èµ·å‹•
 		matrixMul <<<grid, block>>>(dMatrixA, dMatrixB, dMatrixC);
 		cudaThreadSynchronize();
 
-		// ‘ª’èI—¹AŒ‹‰Ê•\¦
+		// æ¸¬å®šçµ‚äº†ã€çµæœè¡¨ç¤º
 		cudaEventRecord(stop, 0);
 		cudaEventSynchronize(stop);
 		cudaEventElapsedTime(&millseconds, start, stop);
@@ -74,11 +74,11 @@ main(int argc, char** argv)
 //	printf("BlockSize\t:\t%d\nGridSize\t:\t%d\n", BLOCK_SIZE, MATRIX_SIZE / BLOCK_SIZE);
 	printf("Time average\t:\t%f millseconds\n", sum /10);
 
-	// Œ‹‰Ê‚Ì—Ìˆæ‚ÌŠm•Û‚ÆAƒfƒoƒCƒX‘¤‚©‚ç‚Ìƒƒ‚ƒŠ“]‘—
+	// çµæœã®é ˜åŸŸã®ç¢ºä¿ã¨ã€ãƒ‡ãƒã‚¤ã‚¹å´ã‹ã‚‰ã®ãƒ¡ãƒ¢ãƒªè»¢é€
 	hMatrixC = (int*) malloc(matrixSize);
 	cutilSafeCall(cudaMemcpy(hMatrixC, dMatrixC, matrixSize, cudaMemcpyDeviceToHost));
 
-	// ƒƒ‚ƒŠŠJ•ú
+	// ãƒ¡ãƒ¢ãƒªé–‹æ”¾
 	free(hMatrixA);
 	free(hMatrixB);
 	free(hMatrixC);
@@ -89,7 +89,7 @@ main(int argc, char** argv)
 	cudaThreadExit();
 }
 
-// s—ñŒvZ‚ğ‚·‚éƒJ[ƒlƒ‹ŠÖ”
+// è¡Œåˆ—è¨ˆç®—ã‚’ã™ã‚‹ã‚«ãƒ¼ãƒãƒ«é–¢æ•°
 __global__ void
 matrixMul(int* inMatrixA, int* inMatrixB, int* inMatrixC)
 {
@@ -99,9 +99,9 @@ matrixMul(int* inMatrixA, int* inMatrixB, int* inMatrixC)
 	int	target = 0;
 
 	for (scan_idx = 0; scan_idx < MATRIX_SIZE; scan_idx++) {
-		// ‘ÎÛ‚Æ‚È‚é•”•ª‚ğ‚©‚¯‚½‚à‚Ì‚ğ‘«‚µ‚Ä‚¢‚­
+		// å¯¾è±¡ã¨ãªã‚‹éƒ¨åˆ†ã‚’ã‹ã‘ãŸã‚‚ã®ã‚’è¶³ã—ã¦ã„ã
 		target += inMatrixA[col_idx * MATRIX_SIZE + scan_idx] * inMatrixB[scan_idx * MATRIX_SIZE + row_idx];
-		__syncthreads();	// ƒXƒŒƒbƒh“¯Šú
+		__syncthreads();	// ã‚¹ãƒ¬ãƒƒãƒ‰åŒæœŸ
 	}
 	inMatrixC[col_idx * MATRIX_SIZE + row_idx] = target;
 }
